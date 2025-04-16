@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35931.197 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreFramework", "CoreFramework.csproj", "{4E82CE9E-5EBC-48CF-9940-841342926F26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitTest", "..\ConduitTest\ConduitTest.csproj", "{17D2D291-E0B8-4514-9B92-3E76682D1554}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{4E82CE9E-5EBC-48CF-9940-841342926F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E82CE9E-5EBC-48CF-9940-841342926F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E82CE9E-5EBC-48CF-9940-841342926F26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17D2D291-E0B8-4514-9B92-3E76682D1554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17D2D291-E0B8-4514-9B92-3E76682D1554}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17D2D291-E0B8-4514-9B92-3E76682D1554}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17D2D291-E0B8-4514-9B92-3E76682D1554}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

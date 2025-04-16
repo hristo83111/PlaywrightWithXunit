@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents the types of browsers supported by the framework.
 /// </summary>
-public enum SupportedBrowser
+public enum Browser
 {
     /// <summary>
     /// Represents a generic Chromium-based browser.

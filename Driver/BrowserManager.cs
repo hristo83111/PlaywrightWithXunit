@@ -8,14 +8,14 @@ namespace CoreFramework.Driver;
 /// Manages the initialization and configuration of browser instances using Playwright.
 /// </summary>
 /// <param name="testSettings">The test settings used to configure browser instances.</param>
-public class BrowserManager(TestSettings testSettings)
+public class BrowserManager(TestSettings testSettings) : IBrowserManager
 {
     /// <summary>
     /// Retrieves a browser instance based on the specified browser type.
     /// </summary>
     /// <param name="supportedBrowser">The type of browser to initialize.</param>
     /// <returns>An instance of <see cref="IBrowser"/> configured with the specified settings.</returns>
-    public async Task<IBrowser> GetBrowserAsync(SupportedBrowser supportedBrowser)
+    public async Task<IBrowser> GetBrowserAsync(Browser supportedBrowser)
     {
         var options = GetParameters();
 
@@ -30,14 +30,14 @@ public class BrowserManager(TestSettings testSettings)
     /// <param name="supportedBrowser">The type of browser to launch.</param>
     /// <param name="options">The launch options for the browser.</param>
     /// <returns>An instance of <see cref="IBrowser"/>.</returns>
-    private async Task<IBrowser> LaunchBrowserAsync(SupportedBrowser supportedBrowser, BrowserTypeLaunchOptions options)
+    private async Task<IBrowser> LaunchBrowserAsync(Browser supportedBrowser, BrowserTypeLaunchOptions options)
     {
         var playwright = await Playwright.CreateAsync();
         IBrowserType browserType = supportedBrowser switch
         {
-            SupportedBrowser.Chromium or SupportedBrowser.Chrome or SupportedBrowser.Edge => playwright.Chromium,
-            SupportedBrowser.Firefox => playwright.Firefox,
-            SupportedBrowser.Webkit => playwright.Webkit,
+            Browser.Chromium or Browser.Chrome or Browser.Edge => playwright.Chromium,
+            Browser.Firefox => playwright.Firefox,
+            Browser.Webkit => playwright.Webkit,
             _ => throw new ArgumentOutOfRangeException(nameof(supportedBrowser), $"Unsupported browser type: {supportedBrowser}")
         };
 
@@ -53,7 +53,7 @@ public class BrowserManager(TestSettings testSettings)
         return new BrowserTypeLaunchOptions
         {
             Args = testSettings.Args,
-            Timeout = testSettings.Timeout,
+            Timeout = testSettings.Timeout.HasValue ? testSettings.Timeout.Value * 1000 : 30000,
             Headless = testSettings.Headless,
             SlowMo = testSettings.SlowMo
         };
@@ -64,13 +64,13 @@ public class BrowserManager(TestSettings testSettings)
     /// </summary>
     /// <param name="supportedBrowser">The browser type.</param>
     /// <returns>The channel name, or null if no channel is required.</returns>
-    private string? GetChannelForBrowser(SupportedBrowser supportedBrowser)
+    private string? GetChannelForBrowser(Browser supportedBrowser)
     {
         return supportedBrowser switch
         {
-            SupportedBrowser.Chromium => "chromium",
-            SupportedBrowser.Chrome => "chrome",
-            SupportedBrowser.Edge => "msedge",
+            Browser.Chromium => "chromium",
+            Browser.Chrome => "chrome",
+            Browser.Edge => "msedge",
             _ => null // No channel required for Firefox and Webkit
         };
     }
