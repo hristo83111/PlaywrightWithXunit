@@ -25,4 +25,8 @@
     <Folder Include="Tests\API\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CoreFramework\CoreFramework.csproj" />
+  </ItemGroup>
+
 </Project>
