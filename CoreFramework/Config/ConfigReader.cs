@@ -1,5 +1,4 @@
-﻿using CoreFramework.Enums;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,17 +10,21 @@ namespace CoreFramework.Config;
 public static class ConfigReader
 {
     /// <summary>
-    /// Reads the configuration settings from the appropriate environment-specific JSON file and deserializes them into a <see cref="TestSettings"/> object.
+    /// Reads the configuration settings from the appropriate environment-specific JSON file and deserializes them into the specified type.
     /// </summary>
-    /// <param name="appEnvironment">The appEnvironment enum value (e.g., <see cref="AppEnvironment.QA"/>, <see cref="AppEnvironment.Stage"/>, <see cref="AppEnvironment.Production"/>).</param>
-    /// <returns>The deserialized <see cref="TestSettings"/> object containing the configuration settings.</returns>
+    /// <typeparam name="T">The type into which the configuration file will be deserialized.</typeparam>
+    /// <returns>The deserialized object of type <typeparamref name="T"/> containing the configuration settings.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the configuration file cannot be deserialized.</exception>
     /// <exception cref="FileNotFoundException">Thrown when the configuration file for the specified environment is not found.</exception>
-    public static TestSettings ReadConfig(AppEnvironment appEnvironment)
+    public static T ReadConfig<T>()
     {
+        // Retrieve the environment from the runsettings file
+        var environment = Environment.GetEnvironmentVariable("Environment") 
+            ?? throw new InvalidOperationException("Environment variable 'Environment' is not set.");
+
         var configFilePath = Path.Combine(
             Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty,
-            $"appsettings.{appEnvironment}.json"
+            $"appsettings.{environment}.json"
         );
 
         if (!File.Exists(configFilePath))
@@ -31,7 +34,7 @@ public static class ConfigReader
 
         var configFile = File.ReadAllText(configFilePath);
 
-        var deserializedConfig = JsonSerializer.Deserialize<TestSettings>(configFile, CachedJsonSerializerOptions);
+        var deserializedConfig = JsonSerializer.Deserialize<T>(configFile, CachedJsonSerializerOptions);
 
         return deserializedConfig ?? throw new InvalidOperationException("Failed to deserialize configuration file.");
     }
@@ -45,4 +48,3 @@ public static class ConfigReader
         Converters = { new JsonStringEnumConverter() }
     };
 }
-
