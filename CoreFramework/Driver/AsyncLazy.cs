@@ -1,40 +1,36 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace CoreFramework.Driver;
-
 /// <summary>
 /// Provides support for asynchronous lazy initialization. 
-/// The value is initialized only once and supports asynchronous operations.
+/// The value is initialized only once and is accessed asynchronously.
 /// </summary>
-/// <typeparam name="T">The type of the value being lazily initialized.</typeparam>
-public class AsyncLazy<T> : Lazy<Task<T>>
+/// <typeparam name="T">The type of the value to be lazily initialized.</typeparam>
+public class AsyncLazy<T>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AsyncLazy{T}"/> class with a synchronous value factory.
-    /// </summary>
-    /// <param name="valueFactory">A function that produces the value when it is needed.</param>
-    public AsyncLazy(Func<T> valueFactory)
-        : base(() => Task.Factory.StartNew(valueFactory))
-    {
-    }
+    private readonly Lazy<Task<T>> _instance;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AsyncLazy{T}"/> class with an asynchronous task factory.
+    /// Initializes a new instance of the <see cref="AsyncLazy{T}"/> class with the specified asynchronous factory method.
     /// </summary>
-    /// <param name="taskFactory">A function that produces a task which computes the value when it is needed.</param>
+    /// <param name="taskFactory">A factory method that returns a task to initialize the value.</param>
     public AsyncLazy(Func<Task<T>> taskFactory)
-        : base(() => Task.Factory.StartNew(taskFactory).Unwrap())
     {
+        _instance = new Lazy<Task<T>>(() => Task.Run(taskFactory));
     }
-
 
     /// <summary>
-    /// Gets an awaiter used to await the completion of the asynchronous operation.
+    /// Gets the lazily initialized value as a task.
     /// </summary>
-    /// <returns>A <see cref="TaskAwaiter{T}"/> instance used to await the task.</returns>
-    public TaskAwaiter<T> GetAwaiter()
-    {
-        return Value.GetAwaiter();
-    }
-}
+    public Task<T> Value => _instance.Value;
 
+    /// <summary>
+    /// Gets an awaiter used to await the completion of the asynchronous lazy initialization.
+    /// </summary>
+    /// <returns>A task awaiter for the asynchronous operation.</returns>
+    public TaskAwaiter<T> GetAwaiter() => Value.GetAwaiter();
+
+    /// <summary>
+    /// Gets a value indicating whether the asynchronous value has already been created.
+    /// </summary>
+    public bool IsValueCreated => _instance.IsValueCreated;
+}
